@@ -1,0 +1,142 @@
+﻿@model E_indeks.Models.Student
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+
+    string language = ViewContext.RouteData.Values["language"].ToString();
+    Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(language);
+    Thread.CurrentThread.CurrentUICulture = new CultureInfo(language);
+
+
+}
+@{
+    ViewBag.Title = "Create Student";
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@{
+    ViewData["hideFlags"] = true;
+}
+
+<h2>@E_Indeks.Resources.Create.Create_Student</h2>
+
+<form method="post" asp-action="CreateNewStudent" asp-controller="Home" onsubmit="return validateForm('@E_Indeks.Resources.Create.Indeks_is_required_', '@E_Indeks.Resources.Create.Indeks_must_be_a_6_digit_number_', '@E_Indeks.Resources.Create.Indeks_already_exists', '@E_Indeks.Resources.Create.Full_Name_is_required_', '@E_Indeks.Resources.Create.Prosek_must_be_a_valid_number_', '@E_Indeks.Resources.Create.Prosek_must_be_between_6_00_and_10_00_', '@E_Indeks.Resources.Create.Grad_is_required_')">
+
+    <div class="form-group">
+        <label asp-for="Indeks">@E_Indeks.Resources.Create.Indeks</label>
+        <input asp-for="Indeks" class="form-control" />
+        <span id="indeks-error" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="FullName">@E_Indeks.Resources.Create.FullName</label>
+        <input asp-for="FullName" class="form-control" />
+        <span id="fullName-error" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Prosek">@E_Indeks.Resources.Create.Prosek</label>
+        <input type="text" asp-for="Prosek" class="form-control" />
+        <span id="prosek-error" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Grad">@E_Indeks.Resources.Create.Grad</label>
+        <select asp-for="Grad" class="form-control">
+            <option value="">@E_Indeks.Resources.Create.Select_a_City</option>
+            @foreach (var grad in ViewBag.Gradovi)
+            {
+                <option value="@grad.Name">@grad.Name</option>
+            }
+        </select>
+        <span id="grad-error" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Kvota">Kvota</label>
+        <select asp-for="Kvota" class="form-control">
+            <option value="">Select</option>
+            <option value="Државна">Државна</option>
+            <option value="Приватна">Приватна</option>
+        </select>
+        <span id="kvota-error" class="text-danger"></span>
+    </div>
+@*    во овој input дел се сместени сите индекси од базата на податоци кои ни служи да провериме дали индексот постои
+    тој е скриен и не се покажува на екран се користи само за проверка
+    проверката за да ли индексот што сме го внеле постои во базата се прави во javascript*@
+    <input type="hidden" id="existingIndices" value="@ViewBag.ExistingIndices" />
+    <button type="submit" class="btn btn-primary">@E_Indeks.Resources.Create.Submit</button>
+</form>
+<form method="post" style="padding-left: 90px;margin-top: -37px;" asp-action="Index" asp-controller="Home">
+    <button type="submit" class="btn btn-primary">  @E_Indeks.Resources.Create.Cancel</button>
+</form>
+
+@section Scripts {
+    <script>
+        function validateForm(indeksRequiredErrorMessage, invalidIndeksErrorMessage, indeksExistsErrorMessage, fullNameRequiredErrorMessage, invalidProsekErrorMessage, prosekRangeErrorMessage, gradRequiredErrorMessage) {
+            // Validate Indeks
+            //TRIM SE KORISTI ZA OTSTRANUVANJE PRAZNI MESTA OD POCHETOKOT I KRAJOT KOJA SE CHUVA VO PROMENLIVATA PROSEK
+            var indeks = document.getElementById("Indeks").value.trim();
+            if (indeks === "") {
+                document.getElementById("indeks-error").innerText = indeksRequiredErrorMessage;
+                return false;
+            }
+
+            if (indeks.length !== 6 || isNaN(indeks)) {
+                document.getElementById("indeks-error").innerText = invalidIndeksErrorMessage;
+                if (indeks.length === 6) {
+                    document.getElementById("indeks-error").innerText = "";
+                }
+                return false;
+            } else {
+                document.getElementById("indeks-error").innerText = "";
+            }
+
+            var existingIndices = document.getElementById("existingIndices").value.split(",");
+            if (existingIndices.includes(indeks)) {
+                document.getElementById("indeks-error").innerText = indeksExistsErrorMessage;
+                return false;
+            } else {
+                document.getElementById("indeks-error").innerText = "";
+            }
+
+            // Validate FullName
+            var fullName = document.getElementById("FullName").value.trim();
+            if (fullName === "") {
+                document.getElementById("fullName-error").innerText = fullNameRequiredErrorMessage;
+                return false;
+            } else {
+                document.getElementById("fullName-error").innerText = "";
+            }
+
+            // Validate Prosek
+            var prosek = document.getElementById("Prosek").value.trim();
+            prosek = prosek.replace(",", ".");
+            if (prosek === "" || isNaN(parseFloat(prosek))) {
+                document.getElementById("prosek-error").innerText = invalidProsekErrorMessage;
+                return false;
+            } else {
+                document.getElementById("prosek-error").innerText = "";
+            }
+            if (parseFloat(prosek) < 6.00 || parseFloat(prosek) > 10.00) {
+                document.getElementById("prosek-error").innerText = prosekRangeErrorMessage;
+                return false;
+            } else {
+                document.getElementById("prosek-error").innerText = "";
+            }
+
+            // Validate Grad
+            var grad = document.getElementById("Grad").value.trim();
+            if (grad === "") {
+                document.getElementById("grad-error").innerText = gradRequiredErrorMessage;
+                return false;
+            } else {
+                document.getElementById("grad-error").innerText = "";
+            }
+
+            return true;
+        }
+    </script>
+}
+
+
+
+

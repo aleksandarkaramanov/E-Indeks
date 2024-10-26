@@ -1,0 +1,40 @@
+﻿@using System.Globalization;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Login</title>
+    <!-- Include your CSS and other head elements here -->
+</head>
+<body>
+    @{
+        //со ViewContext.RouteData.Values["language"] пристапуваме до патеката и земаме вредноста за language,ја претвараме во string вредност
+        //и таа вредност ја сместуваме во language
+        string language = ViewContext.RouteData.Values["language"].ToString();
+
+        //креираме култура која ке се карактеризира на јазикот кои е сместен во language
+        //CurrentCulture го определува културата на форматирањето на тековната нишка при извршување на апликацијата
+        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(language);
+        //Thread го користиме за да пристапиме до моменталната култура(во овој случај до културата за кориснички интерфејс)
+        //КУЛТУРА НА КОРИСНИЧКИ ИНТЕРФЕЈС Е КАКО НИ СЕ ПОЈАВУВА НА ЕКТРАН
+        //за CultureInfo  го поставуваме јазикот кои сме го земале во претходниот чекор
+        Thread.CurrentThread.CurrentUICulture = new CultureInfo(language);
+
+    }
+    <header>
+        <div>
+                @Html.Partial("_Navigation")
+        </div>
+    </header>
+
+
+
+    <div>
+        @RenderBody()
+
+    </div>
+
+</body>
+</html>

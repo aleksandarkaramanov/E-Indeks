@@ -1,0 +1,116 @@
+﻿@model E_Indeks.Models.Korisnik;
+@using E_indeks.Models;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = E_Indeks.Resources.Details.Title; // Use resource string for title
+}
+@{
+    ViewData["hideFlags"] = true;
+
+}
+@{
+
+    string language = ViewContext.RouteData.Values["language"].ToString();
+    //Thread го земаме за да можеме да пристапиме до тековната нитна со тековната колтура
+    //со CurrentThread пристапуваме до тековната нитка
+    //со CurrentCulture пристапуваме до тековната култура
+
+    //"Култура" во програмирањето се однесува на сет на преференци за форматирање на податоци како датуми, 
+    //времиња, валутни вредности итн.Се користат за да се прилагодат апликациите на географските определби
+
+    //CultureInfo.CreateSpecificCulture(language) го создава специфичниот културен објект за избраниот јазик, 
+    //кој потоа се користи за да се форматираат податоците соодветно.
+    Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(language);
+    //пристапуваме до моменталната нитка,па до моенталниот кориснички интерфејс каде сместуваме нова информација  за моментаната иформација
+    //во овој случај е јазикот
+    Thread.CurrentThread.CurrentUICulture = new CultureInfo(language);
+
+
+}
+
+<h1 id="ed">@E_Indeks.Resources.Details.Edit</h1>
+
+<h4 id="wd">@E_Indeks.Resources.Details.View_Details</h4> <!-- Use resource string for header -->
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateKorisnik" method="post" id="updateDetailsForm" onsubmit="return validNumber('The value must be 1 or 0.The IsActive is required.','The username is required.','The password is required.')">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label id="indeks_ed" asp-for="Id" class="control-label">@E_Indeks.Resources.EditKorisnik.Id</label> <!-- Use resource string for Indeks label -->
+                <input asp-for="Id" class="form-control" disabled />
+            </div>
+            <div class="form-group">
+
+                @*праќањето на параметар до методот во контролерот овде се прави со asp-for=""*@
+                <label asp-for="UserName" class="control-label">@E_Indeks.Resources.EditKorisnik.UserName</label> <!-- Use resource string for FullName label -->
+                <input asp-for="UserName" class="form-control" />
+                <span id="username-error" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label">@E_Indeks.Resources.EditKorisnik.Password</label> <!-- Use resource string for FullName label -->
+                <input asp-for="Password" class="form-control" />
+                <span id="password-error" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IsActive" class="control-label">@E_Indeks.Resources.EditKorisnik.IsActive</label> <!-- Use resource string for IsActive label -->
+                @if (Model.IsAdmin == 1)//so Model pristapuvame do modelot korisnik a so IsAdmine do podatokot dali e admin ili ne
+                {
+                    <input asp-for="IsActive" class="form-control" disabled />
+                }
+                else
+                {
+                    <input asp-for="IsActive" class="form-control" />
+                }
+                <span id="isactive-error" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="@E_Indeks.Resources.Details.Submit" class="btn btn-primary" /> <!-- Use resource string for Save button -->
+                
+            </div>
+
+        </form>
+        <form style="padding-left: 60px;margin-top: -38px;" method="post" asp-action="Admin" asp-controller="Home">
+            <button type="submit" style="margin-left: 30px;" class="btn btn-primary">@E_Indeks.Resources.Details.Cancel</button> <!-- Use resource string for Cancel button -->
+        </form>
+        <div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        function validNumber(errorNumberIsActive,requiredUserName, requiredPassword) {
+            var isactive=document.getElementById("IsActive").value.trim();
+            if(isactive!=="0" && isactive!=="1"){
+                document.getElementById("isactive-error").innerText = errorNumberIsActive;
+                return false;
+            }else{
+                document.getElementById("isactive-error").innerText = "";
+            }
+
+            var username=document.getElementById("UserName").value.trim();
+            if(username ===""){
+                document.getElementById("username-error").innerText=requiredUserName;
+                return false;//ova moram da go stavam zatoa shto ako ne stavam vrednost krashnuva
+            }else{
+                document.getElementById("username-error").innerText="";
+            }
+
+            var password=document.getElementById("Password").value.trim();
+            if(password===""){
+                document.getElementById("password-error").innerText=requiredPassword;
+                return false;
+            }else{
+                document.getElementById("password-error").innerText="";
+            }
+        }
+    </script>
+}
+
+
+
+

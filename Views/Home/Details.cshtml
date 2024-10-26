@@ -1,0 +1,118 @@
+﻿@model E_indeks.Models.Student;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = E_Indeks.Resources.Details.Title; // Use resource string for title
+}
+@{
+    ViewData["hideFlags"] = true;
+}
+@{
+    
+        string language = ViewContext.RouteData.Values["language"].ToString();
+        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(language);
+        Thread.CurrentThread.CurrentUICulture = new CultureInfo(language);
+
+    
+}
+
+<h1 id="ed">@E_Indeks.Resources.Details.Edit</h1>
+
+<h4 id="wd">@E_Indeks.Resources.Details.View_Details</h4> <!-- Use resource string for header -->
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateDetails" method="post" id="updateDetailsForm" onsubmit="return prepareProsek()" onsubmit="return validateProsek('@E_Indeks.Resources.Details.Prosek_must_be_a_valid_number_','@E_Indeks.Resources.Details.Prosek_must_be_between_6_00_and_10_00_')">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>@*овој дел од кодот  ни служи за валидација*@
+            <input type="hidden" asp-for="Indeks" />
+            <div class="form-group">
+                <label id="indeks_ed" asp-for="Indeks" class="control-label">@E_Indeks.Resources.Details.Indeks</label> <!-- Use resource string for Indeks label -->
+                <input asp-for="Indeks" class="form-control" disabled />@*во овој дел од кодот се прикажуваат инфор на студентот во инпут полето пред да едитираме*@
+            </div>
+            <div class="form-group">
+                <label asp-for="FullName" class="control-label">@E_Indeks.Resources.Details.FullName</label> <!-- Use resource string for FullName label -->
+                <input asp-for="FullName" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Prosek">@E_Indeks.Resources.Create.Prosek</label>
+                <input type="text" asp-for="Prosek" class="form-control" disabled value="@Model.Prosek" />
+                <input type="hidden" asp-for="Prosek" />
+                <span id="prosek-error" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="grad">@E_Indeks.Resources.Details.Grad</label> <!-- Use resource string for Grad label -->
+                <select class="form-control" id="grad" name="grad">
+                    @foreach (var grad in ViewBag.Gradovi)
+                    {
+                        if (grad.Name == Model.Grad)
+                        {
+                            <option value="@grad.Name" selected>@grad.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@grad.Name">@grad.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Kvota</label>
+                <input type="text" asp-for="Kvota" class="form-control" disabled />
+                <input type="hidden" asp-for="Kvota" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="@E_Indeks.Resources.Details.Submit" class="btn btn-primary" /> <!-- Use resource string for Save button -->
+
+            </div>
+        </form>
+        <form style="padding-left: 60px;margin-top: -38px;" method="post" asp-action="Index" asp-controller="Home">
+            <button type="submit" style="margin-left: 30px;" class="btn btn-primary">@E_Indeks.Resources.Details.Cancel</button> <!-- Use resource string for Cancel button -->
+        </form>
+        <div>
+        </div>
+    </div>
+</div>
+
+@*<script>
+    function updateHeaderNamesIndeks() {
+        document.getElementById('indeks_ed').innerText = "Индекс";
+        document.getElementById('ed').innerHTML = "Уреди";
+        document.getElementById('wd').innerText = "Детали за студент";
+
+        // Additional changes specific to this view
+        // You can update other elements as necessary
+
+        // Example: Update button text
+        document.querySelector('input[type="submit"]').value = "Зачувај"; // Change "Save" to Macedonian
+        // Example: Update cancel button text
+        document.querySelector('form[action="Index"] button[type="submit"]').innerText = "Откажи"; // Change "Cancel" to Macedonian
+    }
+</script>*@
+
+@section Scripts {
+    <script>
+        function validateProsek(invalidProsekErrorMessage, prosekRangeErrorMessage) {
+            var prosek = document.getElementById("Prosek").value.trim();
+            prosek = prosek.replace(",", ".");
+            if (prosek === "" || isNaN(parseFloat(prosek))) {
+                document.getElementById("prosek-error").innerText = invalidProsekErrorMessage;
+                return false;
+            } else {
+                document.getElementById("prosek-error").innerText = "";
+            }
+            if (parseFloat(prosek) < 6.00 || parseFloat(prosek) > 10.00) {
+                document.getElementById("prosek-error").innerText = prosekRangeErrorMessage;
+                return false;
+            } else {
+                document.getElementById("prosek-error").innerText = "";
+            }
+        }
+
+
+    </script>
+}
+
+
+   

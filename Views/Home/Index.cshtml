@@ -1,0 +1,300 @@
+﻿@model MyViewModels
+@using E_indeks.Models;
+@using PagedList.Mvc
+@using PagedList
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+@inject IViewLocalizer Localizer
+
+@{
+
+    //od URL go zimame delot za language i go pravime kako string i go stavame vo languаge za da mozheme da go prenesuvame
+
+    string language = ViewContext.RouteData.Values["language"].ToString();
+    Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(language);
+    Thread.CurrentThread.CurrentUICulture = new CultureInfo(language);
+
+    int? isAdmin = HttpContextAccessor.HttpContext.Session.GetInt32("IsAdmin");
+}
+@{
+    bool prosekUpdated = ViewData["ProsekUpdated"] != null && (bool)ViewData["ProsekUpdated"];
+}
+
+<form asp-action="Index" method="get">
+    <div id="form-actions" class="form-actions no-color">
+        <p id="search">
+            @*SO name GO KAZHUVAME IMETO NA PARAMETAROT KOJ KE SE ISPRAKJA DO CONTROLEROT PREKU URL*@
+            @*//so name="SearchIndeks" ja prakjame informacijata do controller*@
+            @E_Indeks.Resources.Index.Find_by_Indeks <input type="text" name="SearchIndeks" value="@ViewData["CurrentFilter"]" />
+            <input type="submit" value="@E_Indeks.Resources.Index.Search" class="btn btn-primary" /> |
+            <a asp-action="Index">@E_Indeks.Resources.Index.Back_to_Full_List</a>
+        </p>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th >
+@*                So asp-route-sortOrder go isprakjame sortOrder do url pa od url vo controllerot*@
+                <a id="indeksHeader" asp-action="Index" asp-route-sortOrder="@ViewData["IndeksSortParam"]" style="color: black; text-decoration: none;">
+                    @E_Indeks.Resources.Index.Indeks
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5" />
+                    </svg>
+                </a>
+            </th>
+            <th >
+                <a id="fullnameHeader" asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParam"]" style="color: black; text-decoration: none;">
+                    @E_Indeks.Resources.Index.FullName
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5" />
+                    </svg>
+                </a>
+            </th>
+            <th>
+                <a id="prosekHeader" asp-action="Index" asp-route-sortOrder="@ViewData["ProsekSortParam"]" style="color: black; text-decoration: none;">@E_Indeks.Resources.Index.ViewSubjects</a>
+            </th>
+            <th style="padding-left: 0px;">
+                <a id="prosekHeader" asp-action="Index" asp-route-sortOrder="@ViewData["ProsekSortParam"]" style="color: black; text-decoration: none;">
+                    @E_Indeks.Resources.Index.Prosek
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5" />
+                    </svg>
+                </a>
+            </th>
+
+            <th>
+                <a id="gradHeader" asp-action="Index" asp-route-sortOrder="@ViewData["GradSortParam"]" style="color: black; text-decoration: none;">
+                    @E_Indeks.Resources.Index.Grad
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5" />
+                    </svg>
+                </a>
+            </th>
+            @if (isAdmin == 1)
+            {
+            <th>@E_Indeks.Resources.Index.Quota</th>
+            <th>@E_Indeks.Resources.Index.Amount</th>
+
+            }
+            <th >
+                <div id="editHeader">
+                    @E_Indeks.Resources.Index.Edit
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                    <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z" />
+                </svg>
+                </div>
+            </th>
+            <th >
+                <div id="deleteHeader">
+                    @E_Indeks.Resources.Index.Delete
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                </svg>
+                </div>
+            </th>
+            <th>УППИ</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.myStudents)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Indeks)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                <td>
+                    <a id="viewSubject" asp-action="ViewSubjects" asp-route-id="@item.Indeks">@E_Indeks.Resources.Index.ViewSubjects</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Prosek)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Grad)
+                </td>
+            @if (isAdmin == 1)
+            {
+@*                <td>
+                    <form id="updateKvotaForm" method="post" asp-action="UpdateKvota">
+                        <input type="hidden" id="indeksInput" name="Indeks" value="" />
+                        <input type="hidden" id="kvotaInput" name="Kvota" value="" /> <!-- New line -->
+                        <div class="dropdown">
+                                <input id="kvotaDropdown" type="text" style="text-align: center; width: 130px;" class="dropdown-toggle" data-bs-toggle="dropdown" value="@Html.DisplayFor(modelItem => item.Kvota)" />
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" onclick="updateKvota('@item.Indeks', 'Државна')">Државна</a></li>
+                                <li><a class="dropdown-item" onclick="updateKvota('@item.Indeks', 'Приватна')">Приватна</a></li>
+                            </ul>
+                        </div>
+                    </form>
+                </td>*@
+                <td>
+                    <form id="updateKvotaForm" method="post" asp-action="UpdateKvota">
+@*                        овие два input ги користиме за да можеме да ја пратиме вредноста до функцијата подоле
+                        која ќе  ја користиме за да се повика формата и да се пратат вредностите до методот во контролерот*@
+                        <input type="hidden" id="indeksInput" name="Indeks" value="" />
+                        <input type="hidden" id="kvotaInput" name="Kvota" value="" />
+                        <div class="dropdown">
+                            @*со data-bs-toggle се овозможува копчето кога ке биде кликнато да се покаже или да се скрие dropdown листата
+                            со аria-haspopup кажуваме дека имаме dropdown menu кое може да се отвори со клик на копчето
+                            со aria-expanded кога е кликнато вредноста е true а ако не е кликнато копчето е false*@
+                            <button id="kvotaDropdown" class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @Html.DisplayFor(modelItem => item.Kvota)
+                            </button>
+                            <ul class="dropdown-menu">
+
+@*                                од овде ги праќаме вредностите до javascript што ни е доле
+                                во јаvascript вредностите ги сместуваме во input што ни се горе како hidden
+                                за да можеме да ги пратиме до контролерот за да се изврши процедурата*@
+
+                                <li><a class="dropdown-item" onclick="updateKvota('@item.Indeks', 'Државна')">Државна</a></li>
+                                <li><a class="dropdown-item" onclick="updateKvota('@item.Indeks', 'Приватна')">Приватна</a></li>
+                            </ul>
+                        </div>
+                    </form>
+                </td>
+                @if(item.Kvota=="Државна")
+                {
+                    <td>6150</td>
+                }
+                else if (item.Kvota == "Приватна")
+                {
+                    <td>12300</td>
+                }
+            }
+                <td>
+                    <a id="edit" asp-action="Details" asp-route-id="@item.Indeks">@E_Indeks.Resources.Index.Edit</a>
+                </td>
+                <td>
+                    <a id="delete" asp-action="IndexDelete" asp-route-id="@item.Indeks">@E_Indeks.Resources.Index.Delete</a>
+                </td>
+                <td>
+                    <a style="padding-left: 15px;" id="report" asp-action="Report" asp-controller="Home" asp-route-id="@item.Indeks" target="_blank"><i class="fa-solid fa-file-pdf"></i></a>
+                </td>
+            </tr>
+        }
+        
+    </tbody>
+</table>
+@{
+    var prevDisabled = !Model.myStudents.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.myStudents.HasNextPage ? "disabled" : " ";
+}
+<a id="prv" asp-action="Index" asp-route-pageNumber="@(Model.myStudents.PageIndex-1)" class="btn btn-default @prevDisabled">@E_Indeks.Resources.Index.Previous</a>
+<a id="next" asp-action="Index" asp-route-pageNumber="@(Model.myStudents.PageIndex+1)" class="btn btn-default @nextDisabled">@E_Indeks.Resources.Index.Next</a>
+<div style="text-align: right;">
+    <form method="post" asp-action="Create" asp-controller="Home">
+        <button id="btn" type="submit" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus" viewBox="0 0 16 16">
+                <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
+                <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5" />
+            </svg>  @E_Indeks.Resources.Index.Create_New_Student
+        </button>
+    </form>
+</div>
+@if (isAdmin == 1)
+{
+    <div class="row">
+        <div class="col-md-9">
+            <!-- Define column width for table -->
+            <table class="table table-bordered w-50 table-hover">
+                <thead class="header-row " style="background-color:lightgray;color:white">
+                    <tr>
+                        <th>
+                            <a id="subjectnameHeader" asp-action="Index" asp-route-sortField="SubjectName" asp-route-sortOrder="@ViewData["NameSubjectSortParam"]" style="color: black; text-decoration: none;">
+                                @E_Indeks.Resources.Index.SubjectName
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-up" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5" />
+                                </svg>
+                            </a>
+                        </th>
+                        <th>
+                            <a id="subjectnameHeader" asp-action="Index" asp-route-sortField="AverageGrade" asp-route-sortOrder="@ViewData["NameSubjectSortParam"]" style="color: black; text-decoration: none;">
+                                @E_Indeks.Resources.Index.Average
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-up" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M11.5 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L11 2.707V14.5a.5.5 0 0 0 .5.5m-7-14a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L4 13.293V1.5a.5.5 0 0 1 .5-.5" />
+                                </svg>
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var subjectAverageGrade in Model.SubjectAverageGrades)
+                    {
+                        <tr>
+                            <td>
+                                @subjectAverageGrade.Key <!-- Display subject name -->
+                            </td>
+                            <td>
+                                @subjectAverageGrade.Value <!-- Display average grade -->
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-3" style="margin-left: -420px;">
+
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td>Mode</td>
+                        <td>
+                            @foreach (var grade in Model.MostFrequentGrades)
+                            {
+                                @grade
+                                ;
+                                if (grade != Model.MostFrequentGrades.Last())
+                                {
+                                    <text>, </text>
+                                }
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Median</td>
+                        <td>@Model.CenterGrades</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Define column width for h2 elements -->
+            @*<h5>
+                Mode=
+                @foreach (var grade in Model.MostFrequentGrades)
+                {
+                    @grade
+                    ;
+                    if (grade != Model.MostFrequentGrades.Last())
+                    {
+                        <text>, </text>
+                    }
+                }
+            </h5>
+            <h5>
+                Median=
+                @Model.CenterGrades
+            </h5>*@
+        </div>
+    </div>
+}
+
+
+<script>
+    function updateKvota(index, kvota) {
+       @* ги добиваме вредностите од горната форма*@
+       @*ги сместуваме како вредности на input hidden деловите за да се пратат до методот во контролерот *@
+        document.getElementById('indeksInput').value = index;
+        document.getElementById('kvotaInput').value = kvota; // New line
+        @*со овој дел правиме Submit на формата што ни е горе*@
+        document.getElementById('updateKvotaForm').submit();
+    }
+
+</script>
+

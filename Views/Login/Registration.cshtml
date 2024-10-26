@@ -1,0 +1,149 @@
+﻿@model E_Indeks.Models.Korisnik
+@using System.Globalization;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    ViewData["Title"] = "Registration";
+}
+<style>
+    /* Custom styles for login form */
+    .login-container {
+        width: 300px;
+        margin: 0 auto;
+        border-radius: 5px;
+    }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 3px;
+        background-color: #007bff;
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .alert-danger {
+        margin-left: 25px;
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #dc3545;
+        border-radius: 3px;
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+
+@*<div class="login-container">
+    @{
+        string language = ViewContext.RouteData.Values["language"].ToString();
+        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(language);
+        Thread.CurrentThread.CurrentUICulture = new CultureInfo(language);
+
+    }
+    <h2>@E_Indeks.Resources.Registration.RegistrationData</h2>
+    <form method="post" asp-action="RegistrationUser" asp-controller="Login" >
+    <div class="form-group">
+        <label asp-for="UserName">@E_Indeks.Resources.Registration.Username:</label>
+        <input asp-for="UserName" class="form-control">
+        <span id="username-error" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label for="Password">@E_Indeks.Resources.Registration.Password:</label>
+            <input  type="password" class="form-control" id="Password" name="Password">
+    </div>
+    <button type="submit" class="btn btn-primary">@E_Indeks.Resources.Registration.Save</button>
+</form>
+    
+</div>*@
+<div class="login-container">
+    @{
+        string language = ViewContext.RouteData.Values["language"].ToString();
+        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(language);
+        Thread.CurrentThread.CurrentUICulture = new CultureInfo(language);
+    }
+    <h2>@E_Indeks.Resources.Registration.RegistrationData</h2>
+
+    @if (TempData["Error"] != null)
+    {
+        <div style="margin-left:0px" class="alert alert-danger">@E_Indeks.Resources.Registration.Username1</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success" style="margin-left:0px">
+            @E_Indeks.Resources.Registration.User_successfully_registered_
+        </div>
+    }
+
+    <form method="post" asp-action="RegistrationUser" asp-controller="Login" id="loginForm">
+        <div class="form-group">
+            <label asp-for="UserName">@E_Indeks.Resources.Registration.Username:</label>
+            <input asp-for="UserName" class="form-control">
+            <div class="invalid-feedback" id="usernameError">@E_Indeks.Resources.LoginLayout.Username_is_required_</div>
+        </div>
+        <div class="form-group">
+            <label for="Password">@E_Indeks.Resources.Registration.Password:</label>
+            <input type="password" class="form-control" id="Password" name="Password">
+            <div class="invalid-feedback" id="passwordError">@E_Indeks.Resources.LoginLayout.Password_is_required_</div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="loginButton">@E_Indeks.Resources.Registration.Save</button>
+    </form>
+    <form asp-controller="Login" asp-action="Index" method="post">
+        <button id="btn" style="margin-top:10px" type="submit" class="btn btn-primary">@E_Indeks.Resources.Registration.Login</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('loginButton').addEventListener('click', function () {
+        var username = document.getElementById('UserName').value;
+        var password = document.getElementById('Password').value;
+
+        var usernameError = document.getElementById('usernameError');
+        var passwordError = document.getElementById('passwordError');
+
+        if (!username) {
+            usernameError.style.display = 'block';
+        } else {
+            usernameError.style.display = 'none';
+        }
+
+        if (!password) {
+            passwordError.style.display = 'block';
+        } else {
+            passwordError.style.display = 'none';
+        }
+
+        if (!username || !password) {
+            event.preventDefault(); // Prevent form submission if fields are empty
+        } else {
+            document.getElementById('loginForm').submit(); // Submit form if fields are not empty
+        }
+    });
+</script>

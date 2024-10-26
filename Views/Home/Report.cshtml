@@ -1,0 +1,97 @@
+﻿@model E_Indeks.Models.ReportModels
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+@{
+    ViewData["Header"] = true;
+    ViewData["Footer"] = true;
+}
+
+<div id="pdfContainer">
+    <style>
+        .horizontal-line {
+            margin-left: 420px;
+            border: 1px solid #000; /* Change color as needed */
+            margin-top: 20px; /* Adjust margin as needed */
+            margin-bottom: 20px; /* Adjust margin as needed */
+            width: 180px;
+        }
+
+
+    </style>
+    <div style="display: flex;justify-content: space-between;">
+        <img style="width:90px;" src="https://upload.wikimedia.org/wikipedia/mk/9/95/%D0%9B%D0%BE%D0%B3%D0%BE_%D0%BD%D0%B0_%D0%A4%D0%95%D0%98%D0%A2.jpg" />
+        <img style="width:77px;margin-top:-5px " src="http://khto.gf.ukim.edu.mk/wp-content/uploads/2021/01/ukim-logo-fp-scaled.jpg" />
+    </div>
+
+
+<div>
+    <h2 style="text-align:center">Република Македонија</h2>
+        <h4 style="text-align:center">Универзитет „Св. Кирил и Методиј“, Скопје</h4>
+        <h4 style="text-align:center">Факултет за електротехника и информациски технологии</h4>
+</div>
+<br />
+<div >
+    <h4 style ="text-align:center">Уверение за положени испити</h4>
+
+        <p style="text-align:center;font-size:17px">
+            Студентот <span class="fw-normal fst-italic" style="font-style:italic">@Html.DisplayFor(model => model.myStudent.FullName)</span>,индекс бр.<span class="fw-normal fst-italic" style="font-style:italic">@Html.DisplayFor(model => model.myStudent.Indeks) </span>запишан-а на факултет<br /> Факултет за електротехника и информациски технологии во Скопје,на студиската програма КТИ
+            во студиската година 2023/2024 година запишан-а во <span class="fw-normal " style="font-style:italic">@Html.DisplayFor(model => model.myStudent.Kvota)</span> со просек <span class="fw-normal fst-italic" style="font-style:italic">@Html.DisplayFor(model => model.myStudent.Prosek)</span>
+    </p>
+</div>
+<br />
+<div>
+        <h5 style="text-align:center">ТАБЕЛАРЕН ПРИКАЗ НА ПОЛОЖЕНИ ПРЕДМЕТИ НА СТУДЕНТОТ</h5>
+</div>
+<br />
+    <div class="container" style=";">
+    <div class="row " style="text-align:center">
+        <div class="col-md-6">
+            <!-- Adjust column width as needed -->
+            <div class="table">
+                    <table style="margin-left: 40px;margin-right: auto;border: 1px solid;border-collapse: collapse;width:90%" class="table table-bordered">
+                    <thead>
+                        <tr style ="border: 1px solid;">
+                                <td style="border: 1px solid;font-weight: bold;" class="fw-bold">Име на предмет</td>
+                                <td style="border: 1px solid;font-weight: bold;" class="fw-bold">Оценка</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var predmet in Model.myPredmeti)
+                        {
+                            <tr>
+                                <td style="border: 1px solid;">
+                                    @predmet.SubjectName <!-- Display subject name -->
+                                </td>
+                                 <td style="border: 1px solid;">
+                                    @predmet.Grade <!-- Display average grade -->
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="text-center">
+    <p style="text-align:center">
+        Ова уверение на именуваниот-а се издава за да му-и послужи за продолжување<br /> на правото на стипендија.
+        Ова уверение е ослободено од такса врз основа <br /> на член 22, точките 13, 25, 28 и 31, од Основниот закон за административни такси.
+    </p>
+</div>
+
+<br />
+<br />
+
+<div>
+    <p class="fw-bold" style="margin-left: 438px;">Продекан за настава</p>
+    <br />
+    <div class="horizontal-line">
+    </div>
+    <p style="margin-left: 450px;">Скопје, @Model.CurrentDate.ToShortDateString()</p>
+</div>
+</div>
+
+
+
+
+

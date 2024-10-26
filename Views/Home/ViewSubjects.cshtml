@@ -1,0 +1,135 @@
+﻿@model List<E_Indeks.Models.Predmeti>
+@{
+    string language = ViewContext.RouteData.Values["language"].ToString();//zemame momentalno shto ni se naogja vo language od URL
+    Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(language);
+    Thread.CurrentThread.CurrentUICulture = new CultureInfo(language);
+
+}
+@{
+    ViewData["hideFlags"] = true;
+
+}
+
+<h1>@E_Indeks.Resources.ViewSubjects.Subjects_for_the_student</h1>
+@{
+     int isAdmin = Convert.ToInt32(ViewData["IsAdmin"]); ;
+}
+<style>
+    .grade-error {
+        display: block; /* Display the error message as a block-level element */
+        margin-top: 5px; /* Add some space between the input and the error message */
+    }
+</style>
+<form id="submitForm" method="post" asp-action="UpdateGrade" onsubmit="validateGrade()">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>@E_Indeks.Resources.ViewSubjects.Subject_Name</th>
+                <th>@E_Indeks.Resources.ViewSubjects.Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var subject in Model)
+            {
+                <tr>
+                    <td>@subject.SubjectName</td> @*овој дел од кодот овозможува да се вметне името на предметот на html страната*@
+                    <td >
+                        @*во овој дел од кодот ко чуваме индексот на тековниот предмет
+                        со type="hidden" правиме да не биде видлив за корисниците*@
+                        <input type="hidden" name="indeks" value="@subject.Indeks" />
+                        <!-- Use array notation for subjectName -->
+                        @*уште едно скриено input поле каде се чува името на предметот
+                        овде додаваме [] со кое означуваме дека ке се работи за низа од предмети
+                        ова значи дека ако имаме повеќе предмети во листата до контролерот ке се пратат како низа
+                        *@
+@*                        до контролерот праќаме со помош на name="",во овој случај праќаме низа од имиња на предмети
+*@                        
+                        @*во value се сместува вредноста што ќе ја има на почеток во input делот*@
+                        <input type="hidden" name="subjectName[]" value="@subject.SubjectName" />
+                        @if (ViewData["IsAdmin"] != null && isAdmin == 1)
+                        {
+                            @*во овој input дел ни е за оценката,преку name="newGrade[]" праќаме низа од оценки за секој предмет до контролерот*@
+                            <input type="number" asp-for="@subject.Grade" data-val-required="true" name="newGrade[]" style="padding-left: 14px;width: 55px;text-align: center;" value="@subject.Grade" />
+                        }
+                        else
+                        {
+                            <input type="number" name="newGrade[]" style="padding-left: 14px;width: 55px;text-align: center;" value="@subject.Grade" disabled />
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="form-group">
+        @if (ViewData["IsAdmin"] != null && isAdmin == 1)
+        {
+            <input type="submit" value="@E_Indeks.Resources.ViewSubjects.Submit" class="btn btn-primary"  />
+        }
+        else
+        {
+            <input type="submit" value="@E_Indeks.Resources.ViewSubjects.Submit" class="btn btn-primary" disabled />
+        }
+    </div>
+</form>
+
+<form style="padding-left: 60px;margin-top: -38px;" method="post" asp-action="Index" asp-controller="Home">
+    <button type="submit" style="margin-left: 30px;" class="btn btn-primary">@E_Indeks.Resources.Details.Cancel</button> <!-- Use resource string for Cancel button -->
+</form>
+
+@section Scripts {
+    <script>
+        function validateGrade() {
+            //ja zemame cela niza od grade elementi 
+            var gradeInputs = document.getElementsByName("newGrade[]");
+            var isValid = true;//na pochetok inicijalizirame deka ke ni bide validno
+            var language = "@ViewContext.RouteData.Values["language"]";//go zemame jazikot od URL koi go imame vo momentot za da mozheme da go smenime jazikot vo alert
+
+            for (var i = 0; i < gradeInputs.length; i++) {//for ciklus za da ja izvrtime nizata od newGrade[]
+                var grade = parseFloat(gradeInputs[i].value.trim());//vo grade stavame ocenka po ocenka kako go vrtime for ciklusot
+                if (isNaN(grade) || grade < 6 || grade > 10) {//go proveruvame uslovot i ako barem edno e tochno ke vleze vo voj if uslov
+                    isValid = false;//ke kazheme deka ne ni e validno
+
+                    // Add 'is-invalid' class to the grade input to highlight it
+                    //gradeInputs[i].classList.add("is-invalid");
+                } else {
+
+                    // Remove 'is-invalid' class from the grade input
+                    //gradeInputs[i].classList.remove("is-invalid");
+                }
+            }
+            if (!isValid) {//dokolku ima vlezeno vo uslovot za ne validnost pogore
+                event.preventDefault(); // ova ni koristi za da ne se prefrli na sleden view 
+                // Determine the alert message based on the selected language
+                var alertMessage = getAlertMessage(language);//ovde ja zemame porakata shto treba da se isprati vo alert so pomosh na funkcijata podole
+                alert(alertMessage);//so ovoj del se povikuva alert
+            }
+        }
+        function getAlertMessage(language) {//OVAA FUNKCIJA JA KORISTIME ZA DA GO SMENIME JAZIKOT NA ALERT PORAKATA
+            // Assuming you have a mechanism to retrieve alert messages based on language
+            // You can fetch the message from resource files or language dictionaries
+            // This is just a placeholder, replace it with your actual implementation
+            switch (language) {
+                case "en":
+                    return "Please enter a grade between 6 and 10.";
+                case "mk":
+                    return "Внесете оценка помеѓу 6 и 10.";
+                case "sq":
+                    return "Ju lutemi shkruani një notë midis 6 dhe 10.";
+                // Add cases for other languages as needed
+                default:
+                    return "Please enter a grade between 6 and 10.";
+            }
+        }
+    </script>
+
+
+}
+
+
+
+
+
+
+
+

@@ -1,0 +1,204 @@
+﻿@using System.Globalization;
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    Layout = "~/Views/Shared/_LoginLayout.cshtml";
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    /* Custom styles for login form */
+    .login-container {
+        width: 300px;
+        margin: 0 auto;
+        border-radius: 5px;
+    }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 3px;
+        background-color: #007bff;
+        color: #fff;
+        cursor: pointer;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .alert-danger {
+        margin-left:25px;
+        margin-bottom: 15px;
+        padding: 10px;
+        border: 1px solid #dc3545;
+        border-radius: 3px;
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .invalid-feedback {
+        color: red;
+    }
+</style>
+
+<div class="login-container">
+    @{
+        string language = ViewContext.RouteData.Values["language"].ToString();
+        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(language);
+        Thread.CurrentThread.CurrentUICulture = new CultureInfo(language);
+
+    }
+    <h2 id="login">@E_Indeks.Resources.LoginLayout.Login</h2>
+
+    @if (TempData["Error"] != null)
+    {
+        <div style="margin-left:0px" class="alert alert-danger">@E_Indeks.Resources.LoginLayout.Wrong_credentials__Please__try_again_</div>
+    }
+
+    @if (TempData["ErrorInactive"] != null)
+    {
+        <div style="margin-left:0px" class="alert alert-danger">@E_Indeks.Resources.LoginLayout.Your_account_is_inactive__Please_contact_the_administrator_</div>
+    }
+
+@*    <form asp-controller="Login" asp-action="Login" method="post">
+        <div class="form-group">
+            <label for="UserName">@E_Indeks.Resources.LoginLayout.Username</label>
+            <input type="text" class="form-control" id="UserName" name="UserName">
+            <div class="invalid-feedback">Username is required.</div>
+        </div>
+        <div class="form-group">
+            <label for="Password">@E_Indeks.Resources.LoginLayout.Password</label>
+            <input type="password" class="form-control" id="Password" name="Password">
+            <div class="invalid-feedback">Username is required.</div>
+        </div>
+        <button type="submit" class="btn btn-primary">@E_Indeks.Resources.LoginLayout.Login</button>
+    </form>
+
+</div>
+<script>
+    // Function to update the language
+    function updateHeaderNamesIndeks() {
+        document.getElementById('login').innerText="Најава";
+    }
+</script>*@
+<form asp-controller="Login" asp-action="Login" method="post" id="loginForm">
+    <div class="form-group">
+        <label for="UserName">@E_Indeks.Resources.LoginLayout.Username</label>
+        <input type="text" class="form-control" id="UserName" name="UserName">
+        <div class="invalid-feedback" id="usernameError">@E_Indeks.Resources.LoginLayout.Username_is_required_</div>
+    </div>
+    <div class="form-group">
+        <label for="Password">@E_Indeks.Resources.LoginLayout.Password</label>
+        <input type="password" class="form-control" id="Password" name="Password">
+        <div class="invalid-feedback" id="passwordError">@E_Indeks.Resources.LoginLayout.Password_is_required_</div>
+    </div>
+    <button type="button" class="btn btn-primary" id="loginButton">@E_Indeks.Resources.LoginLayout.Login</button>
+</form>
+<form asp-controller="Login" asp-action="Registration" method="post">
+    <button id="btn" style="margin-top:10px" type="submit" class="btn btn-primary">@E_Indeks.Resources.LoginLayout.Registration</button>
+
+</form>
+
+@*<script>
+    document.getElementById('loginButton').addEventListener('click', function () {
+        var username = document.getElementById('UserName').value;
+        var password = document.getElementById('Password').value;
+
+        var usernameError = document.getElementById('usernameError');
+        var passwordError = document.getElementById('passwordError');
+
+        if (!username) {
+            usernameError.style.display = 'block';
+        } else {
+            usernameError.style.display = 'none';
+        }
+
+        if (!password) {
+            passwordError.style.display = 'block';
+        } else {
+            passwordError.style.display = 'none';
+        }
+
+        if (!username || !password) {
+            event.preventDefault(); // Prevent form submission if fields are empty
+        } else {
+            document.getElementById('loginForm').submit(); // Submit form if fields are not empty
+        }
+    });
+</script>*@
+    <script>
+        // Function to handle form submission
+        function handleFormSubmission(event) {
+            var username = document.getElementById('UserName').value;
+            var password = document.getElementById('Password').value;
+
+            var usernameError = document.getElementById('usernameError');
+            var passwordError = document.getElementById('passwordError');
+
+            if (!username) {
+                usernameError.style.display = 'block';
+            } else {
+                usernameError.style.display = 'none';
+            }
+
+            if (!password) {
+                passwordError.style.display = 'block';
+            } else {
+                passwordError.style.display = 'none';
+            }
+
+            if (!username || !password) {
+                event.preventDefault(); // Prevent form submission if fields are empty
+            } else {
+                document.getElementById('loginForm').submit(); // Submit form if fields are not empty
+            }
+        }
+
+        // Add event listener for form submission when clicking the login button
+        document.getElementById('loginButton').addEventListener('click', handleFormSubmission);
+
+        // Add event listener for Enter key press on input fields
+
+        //кажуваме дека ке се изврши функцијата со притискање на копче,доколку курсерот е кај полето со id='UserName'
+        document.getElementById('UserName').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {//проверуваме дали настанското копче е Ентер
+                handleFormSubmission(event);
+            }
+        });
+        //кажуваме дека ќе се изврши функцијата со притискање на копче,ако курсерот ни е кај полето id="Password"
+        document.getElementById('Password').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                handleFormSubmission(event);
+            }
+        });
+        //само со притискање на копчето ќе се изврши функцијата
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                handleFormSubmission(event);
+            }
+        });
+    </script>
